@@ -4,13 +4,13 @@ import random
 import pyperclip
 import json
 
-letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-symbols = ['!', '#', '$', '%', '&', '(', ')', '*', '+']
+letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'ñ', 'ñ', 'ñ', 'ñ', 'ñ', 'ñ', 'ñ', 'ñ', 'ñ', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'ñ','ñ', 'ñ', 'ñ', '.', '.', '.']
+symbols = ['!', '#', '$', '%', '&', '(', ')', '*', '+', 'ñ', 'ñ', 'ñ', 'ñ', '.', '.', '.', '.']
 
-nr_letters = random.randint(8, 10)
-nr_symbols = random.randint(2, 4)
-nr_numbers = random.randint(2, 4)
+nr_letters = random.randint(8, 17)
+nr_symbols = random.randint(2, 8)
+nr_numbers = random.randint(2, 8)
 
 letters_password_list = [random.choice(letters) for char in range(nr_letters)]
 symbols_password_list = [random.choice(symbols) for chars in range(nr_symbols)]
@@ -27,6 +27,21 @@ def insert_password():
         password_text_box3.delete(0, END)
         password_text_box3.insert(0, f"{o_pass}")
         pyperclip.copy(o_pass)
+
+def search_for_password():
+    websites = website_text_box.get()
+    try:
+        with open("my_passwords.json", "r") as my_file:
+            reading = json.load(my_file)
+            if websites in reading:
+                messagebox.showinfo(f"{websites}", message=f"Email:{reading[websites]["email"]}\nPassword:{reading[websites]["password"]}" )
+            else:
+                messagebox.showinfo(title="Error", message="No details for the website exists")
+
+    except FileNotFoundError:
+        messagebox.showinfo(title="Error", message="No Data File Found")
+
+
 
 def save_information():
     website = website_text_box.get()
@@ -61,7 +76,6 @@ def save_information():
                         data.update(new_data)
                         json.dump(data, my_file, indent=4)
 
-
                 finally:
                     website_text_box.delete(0, END)
                     password_text_box3.delete(0, END)
@@ -85,21 +99,23 @@ password_logo = PhotoImage(file="logo.png")
 canvas.create_image(112, 112, image=password_logo)
 canvas.grid(column=1, row=0)
 
-website_text_box = Entry(width=44)
-website_text_box.grid(column=1, row=1, columnspan=2)
+website_text_box = Entry(width=38)
+website_text_box.grid(column=1, row=1)
 website_text_box.focus()
 
-email_text_box2 = Entry(width=44)
-email_text_box2.grid(column=1, row=2, columnspan=2)
+email_text_box2 = Entry(width=38)
+email_text_box2.grid(column=1, row=2)
 
-password_text_box3 = Entry(width=26)
+password_text_box3 = Entry(width=38)
 password_text_box3.grid(column=1, row=3)
 
-add_button1 = Button(text="Add", width=37, command=save_information)
+add_button1 = Button(text="Add", width=53, command=save_information)
 add_button1.grid(column=1, row=4, columnspan=2)
 
-label4 = Button(text="Generate Password", command=insert_password)
-label4.grid(column=2, row=3)
+generate_button = Button(text="Generate Password", command=insert_password, width=20)
+generate_button.grid(column=2, row=3)
 
+find_password = Button(text="Search", width=20, command=search_for_password)
+find_password.grid(column=2, row=1)
 
 window.mainloop()
