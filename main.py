@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 import random
 import pyperclip
+import json
 
 letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
@@ -20,8 +21,6 @@ random.shuffle(new_pass)
 
 o_pass = "".join(new_pass)
 
-print(o_pass)
-
 def insert_password():
     password_text_box3.insert(0, f"{o_pass}")
     if len(password_text_box3.get()) > 0:
@@ -33,6 +32,12 @@ def save_information():
     website = website_text_box.get()
     email = email_text_box2.get()
     password = password_text_box3.get()
+    new_data = {
+                website: {
+                "email": email,
+                "password": password,
+        }
+    }
 
     flag = True
     while flag:
@@ -41,14 +46,25 @@ def save_information():
             break
         elif len(website) > 0 or len(password) > 0:
             flag = False
-
             ok_message = messagebox.askokcancel(title=website, message=f"Information \n\nEmail: {email}, \nPassword: {password} \nIs this ok to save?")
             if ok_message:
-                with open("my_passwords.txt", 'a') as my_file:
-                    my_file.write(f"{website} | {email} | {password}\n")
-                website_text_box.delete(0, END)
-                password_text_box3.delete(0, END)
+                try:
+                    with open("my_passwords.json", "r") as my_file:
+                        data = json.load(my_file)
 
+                except FileNotFoundError:
+                    with open("my_passwords.json", "w") as my_file:
+                        json.dump(new_data, my_file, indent=4)
+
+                else:
+                    with open("my_passwords.json", "w") as my_file:
+                        data.update(new_data)
+                        json.dump(data, my_file, indent=4)
+
+
+                finally:
+                    website_text_box.delete(0, END)
+                    password_text_box3.delete(0, END)
 
 window = Tk()
 window.title("Password Manager")
